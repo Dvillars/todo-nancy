@@ -1,0 +1,20 @@
+<h1>Add a new task</h1>
+<form action="/tasks/new" method="post">
+  <label for="task-description">Task description:</label>
+  <input id="task-description" name="task-description" type="text">
+  <label for="year">Year(yyyy):</label>
+  <input id="year" name="year" type="number">
+  <label for="month">Month(mm):</label>
+  <input id="month" name="month" type="number">
+  <label for="day">Day(dd):</label>
+  <input id="day" name="day" type="number">
+  <select name="category-id">
+    @foreach (var category in Model)
+    {
+      <option value="@category.GetId()">@category.GetName()</option>
+    }
+  </select>
+  <button type="submit">Add new task</button>
+</form>
+<p><a href="/">Back home</a></p>
+<p><a href="/tasks">View all tasks</a></p>

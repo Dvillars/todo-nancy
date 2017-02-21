@@ -9,48 +9,66 @@ namespace ToDoList
   public class ToDoTest : IDisposable
   {
 
-    [Fact]
-    public void Test_DatabaseEmptyAtFirst()
+    public ToDoTest()
     {
-      int result = Task.GetAll().Count;
-
-      Assert.Equal(0, result);
+      DBConfiguration.ConnectionString = "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=todo_test;Integrated Security=SSPI;";
     }
 
-    [Fact]
-    public void Test_Equal_ReturnsTrueIfDescriptionsAreTheSame()
-    {
-      Task firstTask = new Task("Mow the lawn");
-      Task secondTask = new Task("Mow the lawn");
+    // [Fact]
+    // public void Test_DatabaseEmptyAtFirst()
+    // {
+    //   int result = Task.GetAll().Count;
+    //
+    //   Assert.Equal(0, result);
+    // }
 
-      Assert.Equal(firstTask, secondTask);
-    }
-
     [Fact]
-    public void Test_Save_SavesToDatabase()
+    public void Test_Save()
     {
-      Task testTask = new Task("Mow the lawn");
+      //Arrange
+      DateTime thisDate1 = new DateTime(2011, 6, 10);
+      Task testTask = new Task("Mow the lawn", 1, thisDate1);
       testTask.Save();
+
+      //Act
       List<Task> result = Task.GetAll();
       List<Task> testList = new List<Task>{testTask};
 
+      //Assert
       Assert.Equal(testList, result);
     }
 
     [Fact]
-    public void Test_Find_FindsTaskInDatabase()
+    public void Test_SaveAssignsIdToObject()
     {
-      Task testTask = new Task("Mow the lawn");
+      //Arrange
+      DateTime thisDate1 = new DateTime(2011, 6, 10);
+      Task testTask = new Task("Mow the lawn", 1, thisDate1);
       testTask.Save();
 
-      Task foundTask = Task.Find(testTask.GetId());
+      //Act
+      Task savedTask = Task.GetAll()[0];
 
-      Assert.Equal(testTask, foundTask);
+      int result = savedTask.GetId();
+      int testId = testTask.GetId();
+
+      //Assert
+      Assert.Equal(testId, result);
     }
 
-    public ToDoTest()
+    [Fact]
+    public void Test_FindFindsTaskInDatabase()
     {
-      DBConfiguration.ConnectionString = "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=todo_test;Integrated Security=SSPI;";
+      //Arrange
+      DateTime thisDate1 = new DateTime(2011, 6, 10);
+      Task testTask = new Task("Mow the lawn", 1, thisDate1);
+      testTask.Save();
+
+      //Act
+      Task foundTask = Task.Find(testTask.GetId());
+
+      //Assert
+      Assert.Equal(testTask, foundTask);
     }
 
     public void Dispose()
