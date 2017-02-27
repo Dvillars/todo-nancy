@@ -14,20 +14,19 @@ namespace ToDoList
       DBConfiguration.ConnectionString = "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=todo_test;Integrated Security=SSPI;";
     }
 
-    // [Fact]
-    // public void Test_DatabaseEmptyAtFirst()
-    // {
-    //   int result = Task.GetAll().Count;
-    //
-    //   Assert.Equal(0, result);
-    // }
+    [Fact]
+    public void Test_DatabaseEmptyAtFirst()
+    {
+      int result = Task.GetAll().Count;
+
+      Assert.Equal(0, result);
+    }
 
     [Fact]
     public void Test_Save()
     {
       //Arrange
-      DateTime thisDate1 = new DateTime(2011, 6, 10);
-      Task testTask = new Task("Mow the lawn", 1, thisDate1);
+      Task testTask = new Task("Mow the lawn");
       testTask.Save();
 
       //Act
@@ -42,8 +41,7 @@ namespace ToDoList
     public void Test_SaveAssignsIdToObject()
     {
       //Arrange
-      DateTime thisDate1 = new DateTime(2011, 6, 10);
-      Task testTask = new Task("Mow the lawn", 1, thisDate1);
+      Task testTask = new Task("Mow the lawn");
       testTask.Save();
 
       //Act
@@ -60,8 +58,8 @@ namespace ToDoList
     public void Test_FindFindsTaskInDatabase()
     {
       //Arrange
-      DateTime thisDate1 = new DateTime(2011, 6, 10);
-      Task testTask = new Task("Mow the lawn", 1, thisDate1);
+
+      Task testTask = new Task("Mow the lawn");
       testTask.Save();
 
       //Act
@@ -71,9 +69,75 @@ namespace ToDoList
       Assert.Equal(testTask, foundTask);
     }
 
+    [Fact]
+    public void Test_AddCategory_AddsCategoryToTask()
+    {
+      //Arrange
+
+      Task testTask = new Task("Mow the lawn");
+      testTask.Save();
+
+      Category testCategory = new Category("Home stuff");
+      testCategory.Save();
+
+      //Act
+      testTask.AddCategory(testCategory);
+
+      List<Category> result = testTask.GetCategories();
+      List<Category> testList = new List<Category>{testCategory};
+
+      //Assert
+      Assert.Equal(testList, result);
+    }
+
+    [Fact]
+    public void Test_GetCategories_ReturnsAllTaskCategories()
+    {
+      //Arrange
+
+      Task testTask = new Task("Mow the lawn");
+      testTask.Save();
+
+      Category testCategory1 = new Category("Home stuff");
+      testCategory1.Save();
+
+      Category testCategory2 = new Category("Work stuff");
+      testCategory2.Save();
+
+      //Act
+      testTask.AddCategory(testCategory1);
+      List<Category> result = testTask.GetCategories();
+      List<Category> testList = new List<Category> {testCategory1};
+
+      //Assert
+      Assert.Equal(testList, result);
+    }
+
+    [Fact]
+    public void Test_Delete_DeletesTaskAssociationsFromDatabase()
+    {
+      //Arrange
+      Category testCategory = new Category("Home stuff");
+      testCategory.Save();
+
+      Task testTask = new Task("Mow the lawn");
+      testTask.Save();
+
+      //Act
+      testTask.AddCategory(testCategory);
+      testTask.Delete();
+
+      List<Task> resultCategoryTasks = testCategory.GetTasks();
+      List<Task> testCategoryTasks = new List<Task> {};
+
+      //Assert
+      Assert.Equal(testCategoryTasks, resultCategoryTasks);
+    }
+
     public void Dispose()
     {
       Task.DeleteAll();
+      Category.DeleteAll();
     }
   }
 }

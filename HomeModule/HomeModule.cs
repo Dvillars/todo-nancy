@@ -39,7 +39,7 @@ namespace ToDoList
         int day = Request.Form["day"];
         DateTime newDate = new DateTime(year, month, day);
 
-        Task newTask = new Task(Request.Form["task-description"], Request.Form["category-id"], newDate);
+        Task newTask = new Task(Request.Form["task-description"]);
         newTask.Save();
         return View["success.cshtml"];
       };
